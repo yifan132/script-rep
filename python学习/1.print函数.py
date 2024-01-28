@@ -1,9 +1,20 @@
+#完整语法格式
+#print(object(s), separator=separator, end=end, file=file, flush=flush)
+print('abc','def', sep='_', end='\n', file=None)
+
 print (3+1)
+print('Hello', 'how are you?', sep=' ---//@@')
+print('Hello', 'how are you?')
+x = ('apple', 'banana', 'cherry')
+print(x)
+
+
 
 #输出文件
-fp=open('D:/text.txt','a+')
+fp=open('D:/python/text.txt','a+')
 print('hello','world','python',file=fp)
 fp.close()
+
 
 
 #转义字符

@@ -1,0 +1,9 @@
+name=input('你的名字是：')
+age=input('你的年龄是：')
+motto=input('你的座右铭是：')
+print(
+    '你叫：',name,
+    '你的年龄是：',int(age),
+    '你的座右铭是：',motto,
+    end='\n'
+)
