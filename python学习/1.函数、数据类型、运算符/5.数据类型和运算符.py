@@ -57,6 +57,8 @@ print('老师说：\"好好学习，天天向上\"')
 print(r'北\n京\n欢\n迎\n你')
 print(R'北\n京\n欢\n迎\n你')
 
+print('北\n京\n欢\n迎\n你')
+
 
 #字符串索引和切片
 s='HELLOWORLD'
@@ -73,3 +75,25 @@ x='2022年'
 y='北京冬奥会'
 print(x+y) #连接字符串
 print(x*10) #x的字符串内容复制10次
+
+#布尔类型
+print('北京' in y)
+print('上海' in y)
+
+x=True
+print(x)
+print(type(x))
+print(x+10)
+print(False+10)
+
+print(bool(18)) #测试整数18的布尔值
+print(bool(0))
+print(bool(0.0))
+#总结，非0的整数的布尔值都是true
+
+print(bool('北京欢迎你'))
+print(bool(''))
+#所有非空字符串的布尔值都是false
+
+print(bool(False))
+print(bool(True))
