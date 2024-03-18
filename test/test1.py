@@ -1,9 +1,9 @@
-name=input('你的名字是：')
-age=input('你的年龄是：')
-motto=input('你的座右铭是：')
-print(
-    '你叫：',name,
-    '你的年龄是：',int(age),
-    '你的座右铭是：',motto,
-    end='\n'
-)
+import Numpy as np
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# 计算Sigmoid函数值
+x = 0
+result = sigmoid(x)
+print(result)
