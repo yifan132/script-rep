@@ -56,8 +56,16 @@ print(8>7 and 6<5)
 print(8<7 and 10/0) # 当8<7结果为false时，直接得结果，不计算10/0
 #print(10/0 and 8<7)
 
+print('---------------------------')
 print(True or True)
 print(True or False)
 print(False or False)
 
 print(not(8>7))
+
+a=int(input('请输入4位整数：'))
+b=a%10
+c=a//10%10
+d=a//100%10
+e=a//1000
+print(a,b,c,d,e)
