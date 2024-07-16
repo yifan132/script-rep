@@ -2,6 +2,8 @@ import os
 import random
 import datetime
 from moviepy.editor import VideoFileClip, concatenate_videoclips
+from moviepy.video.fx.all import speedx
+
 
 # 视频裁剪功能
 def crop_video(video_path, output_dir):
@@ -21,9 +23,9 @@ def crop_video(video_path, output_dir):
     return temp_video_path
 
 # 视频变速功能
-def change_video_speed(video_path, output_dir):
+def change_video_speed(temp_video_path, output_dir):
     # 加载视频
-    video = VideoFileClip(video_path)
+    video = VideoFileClip(temp_video_path)
     # 视频总时长
     duration = video.duration
     # 将视频切分为等时长的三份
@@ -33,9 +35,9 @@ def change_video_speed(video_path, output_dir):
     part3 = video.subclip(2 * part_duration, duration)
     
     # 分别对三个片段进行变速
-    part1_speed = part1.fx(v -> v.speedx(0.9))
-    part2_speed = part2.fx(v -> v.speedx(1.1))
-    part3_speed = part3.fx(v -> v.speedx(0.9))
+    part1_speed = part1.fx(speedx, 0.8)
+    part2_speed = part2.fx(speedx, 1.2)
+    part3_speed = part3.fx(speedx, 0.8)
     
     # 合并变速后的视频片段
     final_video = concatenate_videoclips([part1_speed, part2_speed, part3_speed])
@@ -61,8 +63,8 @@ def main(video_path, output_dir):
     return final_video_path
 
 # 视频路径和输出目录
-video_path = "C:\\Users\\e0449219\\AppData\\Local\\video_cut\\test.mkv"
-output_dir = "C:\\Users\\e0449219\\AppData\\Local\\video_cut\\output\\"
+video_path = r"C:\Users\yangy\Desktop\tiktok项目\video_cut\sample_video\test1.mp4"
+output_dir = r"C:\Users\yangy\Desktop\tiktok项目\video_cut\output"
 
 # 运行主函数
 final_video_path = main(video_path, output_dir)
