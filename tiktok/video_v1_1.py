@@ -49,22 +49,12 @@ def change_video_speed(temp_cut_video_path,video_path, output_dir):
     speed_video.write_videofile(temp_speed_video_path, codec='libx264')
     return temp_speed_video_path
 
-# 视频静音
-def mute_video(temp_speed_video_path,video_path, output_dir):
-    # 加载视频
-    video = VideoFileClip(temp_speed_video_path)
-    # 对视频进行静音处理
-    muted_video = video.without_audio()
-    # 获取原视频文件名（不包括扩展名）
-    video_name = os.path.splitext(os.path.basename(video_path))[0]
-    # 生成临时视频文件路径
-    temp_mute_video_path = os.path.join(output_dir, f"mute_temp_video_{video_name}.mp4")
-    # 保存裁剪后的视频
-    muted_video.write_videofile(temp_mute_video_path, codec='libx264')
-    return temp_mute_video_path
 
 # AI字幕
 def extract_audio(video_path, audio_path):
+    print(f"最终视频已保存至: {video_path}")
+    print(f"最终视频已保存至: {audio_path}")
+    
     ffmpeg_extract_audio(video_path, audio_path)
 
     #定义transcribe_audio函数，接收音频路径和输出格式作为参数，使用OpenAI的API将音频转录为文本，并返回转录结果
@@ -91,77 +81,92 @@ def add_subtitles_with_watermark(video_path, subtitles, output_path, watermark_p
     video = VideoFileClip(video_path)
     video = video.subclip(0, min(video.duration, subtitles[-1]['end_time']))
 
-    # Create a list to hold TextClips
+    # 创建一个列表来保存 TextClips
     text_clips = []
 
-    # Define how many words you want to display per TextClip
+    # 定义每个 TextClip 想要显示的单词数
     words_per_clip = 3
 
-    # Group words into chunks
+    # 将单词分组
     for i in range(0, len(subtitles), words_per_clip):
         chunk = subtitles[i:i + words_per_clip]
-        text = ' '.join(sub['text'] for sub in chunk).upper()  # Convert text to uppercase
+        text = ' '.join(sub['text'] for sub in chunk).upper()  # 将文本转换为大写
         start_time = chunk[0]['start_time']
         end_time = chunk[-1]['end_time']
 
-        # Create a TextClip for this chunk of words
+        # 为这段文字创建一个 TextClip
         txt_clip = TextClip(text, fontsize=54, font='Arial-Bold', color='white', bg_color='black')
-        # Adjust position to incorporate padding
+        # 调整位置以纳入填充
         txt_clip = txt_clip.set_position(('center', 'center')).set_start(start_time).set_end(end_time)
-        # Add padding to the text box
+        # 向文本框添加填充
         txt_clip = txt_clip.margin(top=text_padding, bottom=text_padding, left=text_padding, right=text_padding, color=(0, 0, 0))
         text_clips.append(txt_clip)
 
-    # Overlay the TextClips onto the video
+    # 将文本剪辑叠加到视频上
     video_with_subtitles = CompositeVideoClip([video] + text_clips)
 
-    # Load the watermark image
+    # 加载水印图片
     watermark = ImageClip(watermark_path)
     watermark = watermark.set_duration(video.duration)
-    watermark = watermark.set_opacity(1.0)  # Adjust opacity as needed
+    watermark = watermark.set_opacity(1.0)  # 根据需要调整不透明度
 
-    # Calculate position for the watermark
+    # 计算水印的位置
     watermark_position = (left_padding, top_padding)
 
-    # Add the watermark to the video
+    # 为视频添加水印
     video_with_watermark = CompositeVideoClip([video_with_subtitles.set_position('center'), watermark.set_position(watermark_position)])
 
-    # Write the final video file
+    # 写入最终视频文件
     video_with_watermark.write_videofile(output_path, codec="libx264", audio_codec="aac")
 
 
-    #定义process_video_folder函数，遍历指定文件夹中的视频文件，提取音频、进行转录、添加字幕和水印，最后输出到指定的输出文件夹，并在完成后删除临时音频文件
-def process_video_folder(input_dir, output_dir):
-    for filename in os.listdir(input_dir):
-        if filename.endswith(".mp4"):
-            video_path = os.path.join(input_dir, filename)
-            audio_path = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.mp3")
-            output_path = os.path.join(output_dir, f"{os.path.splitext(filename)[0]}.mp4")
-            
-            watermark_path = "logo.png"
-            top_padding = 40
-            left_padding = 40
+    #定义process_video_folder函数，提取音频、进行转录、添加字幕和水印，最后输出到指定的输出文件夹，并在完成后删除临时音频文件
+def process_video_folder(temp_speed_video_path, output_dir):
+    video_path = r"C:\Users\yangy\Desktop\tiktok项目\video_cut\sample_video\test1.mp4"
+    audio_path = r"C:\Users\yangy\Desktop\tiktok项目\video_cut\output\test1.mp3"
+    output_path = os.path.join(output_dir, f"{os.path.splitext(temp_speed_video_path)[0]}.mp4")
+    
+    watermark_path = "logo.png"
+    top_padding = 40
+    left_padding = 40
 
-            # Extract audio from video
-            extract_audio(video_path, audio_path)
+    # 从视频中提取音频
+    extract_audio(video_path, audio_path)
 
-            # Transcribe audio
-            transcriptions = transcribe_audio(audio_path)
+    # 转录音频
+    transcriptions = transcribe_audio(audio_path)
 
-            # Extract transcriptions with timestamps
-            subtitles = []
-            for word in transcriptions['words']:
-                subtitles.append({
-                    'text': word['word'],
-                    'start_time': word['start'],
-                    'end_time': word['end']
-                })
+    # 提取带有时间戳的转录内容
+    subtitles = []
+    for word in transcriptions['words']:
+        subtitles.append({
+            'text': word['word'],
+            'start_time': word['start'],
+            'end_time': word['end']
+        })
 
-            # Add subtitles and watermark to video
-            add_subtitles_with_watermark(video_path, subtitles, output_path, watermark_path, top_padding, left_padding)
+    # 为视频添加字幕和水印
+    add_subtitles_with_watermark(video_path, subtitles, output_path, watermark_path, top_padding, left_padding)
 
-            # Clean up temporary audio file
-            os.remove(audio_path)
+    # 清理临时音频文件
+    os.remove(audio_path)
+
+
+# 视频静音
+def mute_video(temp_subtitle_video_path,video_path, output_dir):
+    # 加载视频
+    video = VideoFileClip(temp_subtitle_video_path)
+    # 对视频进行静音处理
+    muted_video = video.without_audio()
+    # 获取原视频文件名（不包括扩展名）
+    video_name = os.path.splitext(os.path.basename(video_path))[0]
+    # 生成临时视频文件路径
+    temp_mute_video_path = os.path.join(output_dir, f"mute_temp_video_{video_name}.mp4")
+    # 保存裁剪后的视频
+    muted_video.write_videofile(temp_mute_video_path, codec='libx264')
+    return temp_mute_video_path
+
+
 
 # 主函数更新
 def main(input_dir, output_dir):
@@ -178,11 +183,15 @@ def main(input_dir, output_dir):
             # 变速处理
             temp_speed_video_path = change_video_speed(temp_cut_video_path,video_path, output_dir)
             # 删除临时裁剪视频文件
-            os.remove(temp_cut_video_path)
+            #os.remove(temp_cut_video_path)
+            # AI字幕
+            temp_subtitle_video_path = process_video_folder(temp_speed_video_path, output_dir)
             # 静音视频
-            muted_video = mute_video(temp_speed_video_path,video_path, output_dir)
+            muted_video_path = mute_video(temp_subtitle_video_path,video_path, output_dir)
             # 删除临时变速视频文件
             #os.remove(temp_speed_video_path)
+
+            
             # 结束处理
             # 获取原视频文件名（不包括扩展名）
             video_name = os.path.splitext(os.path.basename(video_path))[0]
@@ -190,15 +199,14 @@ def main(input_dir, output_dir):
             current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
             final_video_path = os.path.join(output_dir, f"final_video_{video_name}_{current_time}.mp4")
             # 使用VideoFileClip对象保存视频
-            muted_video.write_videofile(final_video_path, codec='libx264')
+            muted_video_path.write_videofile(final_video_path, codec='libx264')
             return final_video_path
         
 
 # 指定的输入和输出目录
-input_dir = r"C:\Users\e0449219\AppData\Local\video_cut\sample_video"
-output_dir = r"C:\Users\e0449219\AppData\Local\video_cut\output"
+input_dir = r"C:\Users\yangy\Desktop\tiktok项目\video_cut\sample_video"
+output_dir = r"C:\Users\yangy\Desktop\tiktok项目\video_cut\output"
 
 # 运行主函数
 final_video_path = main(input_dir, output_dir)
-process_video_folder(input_dir, output_dir)
 print(f"最终视频已保存至: {final_video_path}")
