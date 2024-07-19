@@ -7,8 +7,8 @@ def extract_audio(video_path, audio_path):
     ffmpeg_extract_audio(video_path, audio_path)
 
 def transcribe_audio(audio_path, output_format='verbose_json'):
-    api_key = "sk-key"
-    url = "https://api.openai.com/v1/audio/transcriptions"
+    api_key = "c7de3df0f348cc752ee8cc90e4e6ed3d.VirI2Q2pAi5ryDBJ"
+    url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
     headers = {
         "Authorization": f"Bearer {api_key}"
     }
@@ -101,6 +101,6 @@ def process_video_folder(video_folder, output_folder):
             os.remove(audio_path)
 
 if __name__ == "__main__":
-    video_folder = "input"
-    output_folder = "output"
+    video_folder = r"C:\Users\e0449219\AppData\Local\video_cut\sample_video"
+    output_folder = r"C:\Users\e0449219\AppData\Local\video_cut\output"
     process_video_folder(video_folder, output_folder)
