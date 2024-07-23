@@ -45,8 +45,8 @@ class VideoEditor:
 # 使用示例
 if __name__ == "__main__":
     # 视频路径和输出路径
-    video_path = r"C:\Users\e0449219\AppData\Local\video_cut\sample_video\test.mp4"
-    output_path = r"C:\Users\e0449219\AppData\Local\video_cut\output\test.mp4"
+    video_path = r"C:\Users\yangy\Desktop\tiktok\video_cut\sample_video\test.mp4"
+    output_path = r"C:\Users\yangy\Desktop\tiktok\video_cut\output\test.mp4"
 
     # 创建视频剪辑对象
     editor = VideoEditor(video_path, output_path)

@@ -35,9 +35,9 @@ def change_video_speed(temp_cut_video_path,video_path, output_dir):
     part2 = video.subclip(part_duration, 2 * part_duration)
     part3 = video.subclip(2 * part_duration, duration)
     # 分别对三个片段进行变速
-    part1_speed = part1.fx(speedx, 0.8)
-    part2_speed = part2.fx(speedx, 1.2)
-    part3_speed = part3.fx(speedx, 0.8)
+    part1_speed = part1.fx(speedx, 0.9)
+    part2_speed = part2.fx(speedx, 1.1)
+    part3_speed = part3.fx(speedx, 0.9)
     # 合并变速后的视频片段
     speed_video = concatenate_videoclips([part1_speed, part2_speed, part3_speed])
     # 获取原视频文件名（不包括扩展名）
@@ -47,6 +47,11 @@ def change_video_speed(temp_cut_video_path,video_path, output_dir):
     # 保存裁剪后的视频
     speed_video.write_videofile(temp_speed_video_path, codec='libx264')
     return temp_speed_video_path
+
+
+#AI字幕
+#https://github.com/m1guelpf/auto-subtitle
+#https://github.com/parallel75/AI_Truck/blob/main/main.py
 
 # 视频静音
 def mute_video(temp_speed_video_path,video_path, output_dir):
@@ -96,8 +101,8 @@ def main(input_dir, output_dir):
             return final_video_path
 
 # 指定的输入和输出目录
-input_dir = r"C:\Users\yangy\Desktop\tiktok项目\video_cut\sample_video"
-output_dir = r"C:\Users\yangy\Desktop\tiktok项目\video_cut\output"
+input_dir = r"C:\Users\yangy\Desktop\tiktok\video_cut\sample_video"
+output_dir = r"C:\Users\yangy\Desktop\tiktok\video_cut\output"
 
 # 运行主函数
 final_video_path = main(input_dir, output_dir)
