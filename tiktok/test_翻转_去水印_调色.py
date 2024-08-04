@@ -36,7 +36,7 @@ def adjust_video_properties(
     if color_temp != 0 or hue != 0:
         video = video.fx(vfx.colorx, color_temp + hue)
     #黑白调整
-        video = video.fx(vfx.blackwhite, RGB=[RGB_R_value, RGB_G_value, RGB_B_value], preserve_luminosity=False)
+       # video = video.fx(vfx.blackwhite, RGB=[RGB_R_value, RGB_G_value, RGB_B_value], preserve_luminosity=False)
     #if saturation != 1: 
     #    video = video.fx(vfx.colorize, saturation)
     #if brightness != 0:
