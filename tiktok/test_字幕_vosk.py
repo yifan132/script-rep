@@ -38,6 +38,42 @@ class VideoEditor:
 
     # 将字幕增加到视频中
     def add_subtitles(self, text):
+
+        # 创建一个生成器函数，根据识别的文本生成字幕剪辑
+        def generate_subtitles(self, text, start_time=0):
+            words = text.split(' ')
+            current_text = ''
+            for word in words:
+                if len(current_text + ' ' + word) > 10:  # 假设每行字幕不超过10个字符
+                    yield TextClip(current_text, fontsize=20, color='white').set_position(('center', 'bottom')).set_start(start_time).set_duration(2)  # 每个字幕显示2秒
+                    start_time += 2
+                    current_text = word
+                else:
+                    current_text += ' ' + word
+            if current_text:  # 处理最后一行字幕
+                yield TextClip(current_text, fontsize=20, color='white').set_position(('center', 'bottom')).set_start(start_time).set_duration(2)
+
+    # 创建一个生成器函数，根据识别的文本生成字幕剪辑
+    def generate_subtitles(self, text, start_time=0):
+        words = text.split(' ')
+        current_text = ''
+        for word in words:
+            if len(current_text + ' ' + word) > 10:  # 假设每行字幕不超过10个字符
+                yield TextClip(current_text, fontsize=20, color='white').set_position(('center', 'bottom')).set_start(start_time).set_duration(2)  # 每个字幕显示2秒
+                start_time += 2
+                current_text = word
+            else:
+                current_text += ' ' + word
+        if current_text:  # 处理最后一行字幕
+            yield TextClip(current_text, fontsize=20, color='white').set_position(('center', 'bottom')).set_start(start_time).set_duration(2)
+
+    # 将字幕增加到视频中
+    def add_subtitles(self, text):
+        if text:
+            subtitle_clips = list(self.generate_subtitles(text))
+            final_video = mp.concatenate_videoclips([self.video] + subtitle_clips)
+            final_video.write_videofile(self.output_path, codec='libx264', audio_codec='aac')
+
         if text:
             # 创建一个文本剪辑
             text_clip = TextClip(text, fontsize=20, color='white')
@@ -55,10 +91,10 @@ class VideoEditor:
 # 使用示例
 if __name__ == "__main__":
     # 视频路径和输出路径
-    video_path = r"C:\Users\e0449219\AppData\Local\video_cut\sample_video\test.mp4"
-    output_path = r"C:\Users\e0449219\AppData\Local\video_cut\output\test.mp4"
+    video_path = r"C:\Users\yangy\Desktop\tiktok\video_cut\sample_video\test.mp4"
+    output_path = r"C:\Users\yangy\Desktop\tiktok\video_cut\output"
     # vosk模型路径
-    model_path = r"C:\Users\e0449219\AppData\Local\video_cut\vosk-model-small-cn-0.22"
+    model_path = r"C:\Users\yangy\Desktop\tiktok\video_cut\vosk-model-small-cn-0.22"
 
     # 创建视频剪辑对象
     editor = VideoEditor(video_path, output_path, model_path)

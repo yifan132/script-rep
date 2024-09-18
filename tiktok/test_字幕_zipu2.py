@@ -1,5 +1,6 @@
 import os
 import requests
+import base64
 from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip, ImageClip
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_audio
 
@@ -10,18 +11,39 @@ def transcribe_audio(audio_path, output_format='verbose_json'):
     api_key = "c7de3df0f348cc752ee8cc90e4e6ed3d.VirI2Q2pAi5ryDBJ"
     url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
     headers = {
-        "Authorization": f"Bearer {api_key}"
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "json"  # Changing the Content-Type:application/json
     }
-    files = {
-        'file': open(audio_path, 'rb')
-    }
+    
+    # Since we are using application/json, we need to convert the audio file to base64
+    with open(audio_path, 'rb') as audio_file:
+        audio_base64 = base64.b64encode(audio_file.read()).decode('utf-8')
+    
+    # Prepare the request data
     data = {
         'timestamp_granularities[]': 'word',
         'model': 'whisper-1',
-        'response_format': output_format
+        'response_format': output_format,
+        'file': audio_base64  # Sending the audio file as base64
     }
-    response = requests.post(url, headers=headers, files=files, data=data)
+    
+    # Send the request
+    try:
+        response = requests.post(url, headers=headers, json=data, timeout=30)
+    except requests.exceptions.ConnectionError as e:
+        raise Exception(f"Connection error: {e}")
+    
+    # Check for successful response
+    if response.status_code != 200:
+        raise Exception(f"Error: {response.status_code} - {response.text}")
+    
+    # Parse the response data
     response_data = response.json()
+    
+    # Check if 'words' key exists in response_data
+    if 'words' not in response_data:
+        raise KeyError("The 'words' key is missing in the response data.")
+    
     return response_data
 
 def add_subtitles_with_watermark(video_path, subtitles, output_path, watermark_path, top_padding=20, left_padding=20, text_padding=30):
@@ -101,6 +123,6 @@ def process_video_folder(video_folder, output_folder):
             os.remove(audio_path)
 
 if __name__ == "__main__":
-    video_folder = r"C:\Users\e0449219\AppData\Local\video_cut\sample_video"
-    output_folder = r"C:\Users\e0449219\AppData\Local\video_cut\output"
+    video_folder = r"C:\Users\yangy\Desktop\tiktok\video_cut\sample_video"
+    output_folder = r"C:\Users\yangy\Desktop\tiktok\video_cut\output"
     process_video_folder(video_folder, output_folder)
