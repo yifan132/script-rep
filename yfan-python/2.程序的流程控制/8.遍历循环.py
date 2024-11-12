@@ -1,3 +1,12 @@
+#range函数
+r=range(10)
+print(r)
+print(list(r)) #用于查看rage对象中的整数序列
+
+r=range(1,10,2)  #2代表步长
+print(r)
+print(list(r)) #用于查看rage对象中的整数序列
+
 #for 循环
 ##遍历字符串
 for i in 'hello':
